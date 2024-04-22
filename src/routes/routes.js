@@ -89,5 +89,15 @@ router.post('/login', async (req, res) => {
   }
 });
 
+router.get('/usuarios', async (req, res) => {
+  try {
+      const data = await User.find();
+      return res.status(200).json(data);
+    } catch (error) {
+      console.error('Erro ao buscar cursos:', error);
+      return res.status(500).json({ error: 'Erro interno do servidor ao buscar cursos' });
+    }
+})
+
 
 export default router;
