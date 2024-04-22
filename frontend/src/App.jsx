@@ -2,61 +2,113 @@ import { useState } from 'react';
 import './App.css';
 
 function App() {
-  const [data, setData] = useState({
+  const [registerData, setRegisterData] = useState({
     nome: '',
-    idade: '',
-    cpf: '',
-    endereco: '',
-    cep: ''
+    email: '',
+    password: '',
   });
 
-  const handleChange = (e) => {
+  const [loginData, setLoginData] = useState({
+    email: '',
+    password: '',
+  });
+
+  const handleRegisterChange = (e) => {
     const { name, value } = e.target;
-    setData(prevData => ({
+    setRegisterData(prevData => ({
       ...prevData,
       [name]: value
     }));
   }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleLoginChange = (e) => {
+    const { name, value } = e.target;
+    setLoginData(prevData => ({
+      ...prevData,
+      [name]: value
+    }));
+  }
 
+  const handleRegisterSubmit = async (e) => {
+    e.preventDefault();
+  
     try {
-      const fetchData = await fetch('http://localhost:3000/dados', {
+      const fetchData = await fetch('http://localhost:3000/register', {
         method: "POST",
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(data)
+        body: JSON.stringify(registerData)
+      });
+  
+      const res = await fetchData.json();
+      console.log(res);
+  
+      if (fetchData.ok) { 
+        alert('Usuário registrado com sucesso!');
+        setRegisterData({
+          nome: '',
+          email: '',
+          password: '',
+        });
+      } else {
+        alert('Email já cadastrado na base de dados');
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const handleLoginSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const fetchData = await fetch('http://localhost:3000/login', {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(loginData)
       });
 
       const res = await fetchData.json();
-      setData(res);
-
-      
-      setData({
-        nome: '',
-        idade: '',
-        cpf: '',
-        endereco: '',
-        cep: ''
-      });
+      console.log(res);
+      if (fetchData.ok) { 
+        alert('Usuário logado com sucesso!');
+        setRegisterData({
+          nome: '',
+          email: '',
+          password: '',
+        });
+      } else {
+        alert('Email ou senha incorreto!');
+      }
     } catch (error) {
       console.log(error);
     }
   }
 
   return (
-    <>
-      <form onSubmit={handleSubmit}>
-        <input type="text" name="nome" value={data.nome} onChange={handleChange} placeholder="Nome" />
-        <input type="number" name="idade" value={data.idade} onChange={handleChange} placeholder="Idade" />
-        <input type="number" name="cpf" value={data.cpf} onChange={handleChange} placeholder="CPF" />
-        <input type="text" name="endereco" value={data.endereco} onChange={handleChange} placeholder="Endereço" />
-        <input type="number" name="cep" value={data.cep} onChange={handleChange} placeholder="CEP" />
-        <button type='submit'>Enviar</button>
-      </form>
-    </>
+    <div className="App">
+      <div>
+        <h1>Registrar Usuário</h1>
+        <form onSubmit={handleRegisterSubmit}>
+          <input type="text" name="nome" value={registerData.nome} onChange={handleRegisterChange} placeholder="Nome" />
+          <input type="email" name="email" value={registerData.email} onChange={handleRegisterChange} placeholder="E-mail" />
+          <input type="password" name="password" value={registerData.password} onChange={handleRegisterChange} placeholder="Senha" />
+          <button type='submit'>Registrar</button>
+        </form>
+      </div>
+
+      <div>
+        <h1>Login</h1>
+        <form onSubmit={handleLoginSubmit}>
+          <input type="email" name="email" value={loginData.email} onChange={handleLoginChange} placeholder="E-mail" />
+          <input type="password" name="password" value={loginData.password} onChange={handleLoginChange} placeholder="Senha" />
+          <button type='submit'>Login</button>
+        </form>
+      </div>
+    </div>
   );
 }
 
