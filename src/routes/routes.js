@@ -1,8 +1,9 @@
 import express from 'express'
 import Data from  '../models/data.js'
-import User from '../models/sigup.js'
+import Users from '../models/sigup.js'
 import bcrypt from 'bcrypt'
 import jwt from  'jsonwebtoken'
+import multer from 'multer'
 
 const router = express.Router();
 
@@ -36,24 +37,41 @@ router.get('/', async (req, res) => {
 })
 
 // ROTAS PARA O LOGIN //
-router.post('/register', async (req, res) => {
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, './uploads');
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now();
+    cb(null, uniqueSuffix + file.originalname);
+  }
+});
+
+const upload = multer({storage: storage});
+
+router.post('/register', upload.single("file"),  async (req, res) => {
 
   res.setHeader('Access-Control-Allow-Origin', '*');
 
   try {
-    const { nome, email, password } = req.body;
 
-    const existingUser = await User.findOne({ email });
+    const { nome, email, password } = req.body;
+    const Filename  = req.file.filename;
+    console.log(Filename)
+
+    const existingUser = await Users.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ message: 'E-mail já está em uso' });
     }
 
     const hashedPassword = await bcrypt.hash(password, 12);
 
-    const newUser = new User({
+    const newUser = new Users({
       nome: nome,
       email: email,
       password: hashedPassword,
+      filePath: Filename
     });
 
     await newUser.save();
@@ -69,7 +87,7 @@ router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const user = await User.findOne({ email });
+    const user = await Users.findOne({ email });
     if (!user) {
       return res.status(400).json({ message: 'Credenciais inválidas' });
     }
@@ -91,7 +109,7 @@ router.post('/login', async (req, res) => {
 
 router.get('/usuarios', async (req, res) => {
   try {
-      const data = await User.find();
+      const data = await Users.find();
       return res.status(200).json(data);
     } catch (error) {
       console.error('Erro ao buscar cursos:', error);

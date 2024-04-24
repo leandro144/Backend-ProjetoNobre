@@ -6,12 +6,24 @@ function App() {
     nome: '',
     email: '',
     password: '',
+    file: ""
   });
 
   const [loginData, setLoginData] = useState({
     email: '',
     password: '',
   });
+
+  const formData = new FormData();
+  formData.append("file", registerData.file);
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    setRegisterData(prevData => ({
+      ...prevData,
+      file: file
+    }));
+  }
 
   const handleRegisterChange = (e) => {
     const { name, value } = e.target;
@@ -33,23 +45,27 @@ function App() {
     e.preventDefault();
   
     try {
+      const formData = new FormData();
+      formData.append('nome', registerData.nome);
+      formData.append('email', registerData.email);
+      formData.append('password', registerData.password);
+      formData.append('file', registerData.file);
+  
       const fetchData = await fetch('http://localhost:3000/register', {
-        method: "POST",
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(registerData)
+        method: 'POST',
+        body: formData,
       });
   
       const res = await fetchData.json();
       console.log(res);
   
-      if (fetchData.ok) { 
+      if (fetchData.ok) {
         alert('Usuário registrado com sucesso!');
         setRegisterData({
           nome: '',
           email: '',
           password: '',
+          file: ''
         });
       } else {
         alert('Email já cadastrado na base de dados');
@@ -79,6 +95,7 @@ function App() {
           nome: '',
           email: '',
           password: '',
+          file: 'file'
         });
       } else {
         alert('Email ou senha incorreto!');
@@ -92,10 +109,11 @@ function App() {
     <div className="App">
       <div>
         <h1>Registrar Usuário</h1>
-        <form onSubmit={handleRegisterSubmit}>
+        <form onSubmit={handleRegisterSubmit} encType="multipart/form-data">
           <input type="text" name="nome" value={registerData.nome} onChange={handleRegisterChange} placeholder="Nome" />
           <input type="email" name="email" value={registerData.email} onChange={handleRegisterChange} placeholder="E-mail" />
-          <input type="password" name="password" value={registerData.password} onChange={handleRegisterChange} placeholder="Senha" />
+          <input type="password" name="password" value={registerData.password} onChange={handleRegisterChange} placeholder="Senha" accept='application/pdf' />
+          <input type="file" name="file" onChange={handleFileChange} placeholder="File" />
           <button type='submit'>Registrar</button>
         </form>
       </div>

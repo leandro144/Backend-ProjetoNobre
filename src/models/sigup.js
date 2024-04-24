@@ -1,11 +1,12 @@
 import mongoose, { Schema } from "mongoose";
 
-const signSchema = new Schema({
+const siginSchema = new Schema({
     nome: String,
     email: String,
-    password: String
-}, {collection: 'registros'})
+    password: String,
+    filePath: String
+}, {collection: 'registro'})
 
-const Sigin = mongoose.model('Sigin', signSchema);
+const Sigin = mongoose.model('Sigin', siginSchema);
 
 export default Sigin;
