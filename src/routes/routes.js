@@ -139,5 +139,36 @@ router.get('/usuarios', async (req, res) => {
     }
 })
 
+router.get('/user-data', async (req, res) => {
+  try {
+    const token = req.headers.authorization;
+
+    if (!token) {
+      return res.status(401).json({ message: 'Token de autenticação não fornecido' });
+    }
+
+    const tokenParts = token.split(' ');
+
+    if (tokenParts.length !== 2 || tokenParts[0] !== 'Bearer') {
+      return res.status(401).json({ message: 'Formato inválido do token de autenticação' });
+    }
+
+    const authToken = tokenParts[1];
+
+    const userId = decodeAuthToken(authToken);
+
+    const userData = await Users.findById(userId);
+
+    if (!userData) {
+      return res.status(404).json({ message: 'Dados do aluno não encontrados' });
+    }
+
+    res.status(200).json(userData);
+  } catch (error) {
+    console.error('Erro ao buscar dados do aluno:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
 
 export default router;
