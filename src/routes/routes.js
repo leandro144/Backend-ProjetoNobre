@@ -1,5 +1,5 @@
 import express from 'express'
-import Data from  '../models/data.js'
+import Admin from  '../models/admin.js'
 import Users from '../models/sigup.js'
 import bcrypt from 'bcrypt'
 import jwt from  'jsonwebtoken'
@@ -7,36 +7,62 @@ import multer from 'multer'
 
 const router = express.Router();
 
-router.post('/', (req, res) => {
 
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    const { nome, idade, cpf, endereco, cep } = req.body
+// LOGIN PARA ADMIN //
 
-    const newData = new Data({
-        nome: nome,
-        idade: idade,
-        cpf: cpf,
-        endereco: endereco,
-        cep: cep
+router.post('/register-admin', async (req, res) => {
+  
+  try {
+    
+    const { email, password} = req.body
+
+    const existingAdmin = await Admin.findOne({ email })
+
+    if(existingAdmin) {
+      return res.status(400).json({message: 'Email já está em uso'})
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 12);
+
+    const newAdmin = new Admin({
+      email: email,
+      password: hashedPassword
     })
 
-    newData.save()
-    .then(() => res.status(201).json({message: 'Dados enviados com sucesso!'}))
-    .catch(() => res.status(500).json({error: "Erro ao enviar dados"}))
-    
-});
+    await newAdmin.save()
+    res.status(201).json({ message: 'Administrador registrado com sucesso' });
 
-router.get('/', async (req, res) => {
-    try {
-        const data = await Data.find();
-        return res.status(200).json(data);
-      } catch (error) {
-        console.error('Erro ao buscar cursos:', error);
-        return res.status(500).json({ error: 'Erro interno do servidor ao buscar cursos' });
-      }
+  } catch (error) {
+    console.error('Erro ao registrar administrador:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
 })
 
-// ROTAS PARA O LOGIN //
+router.post('/login-admin', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    const admin = await Admin.findOne({ email });
+    if (!admin) {
+      return res.status(400).json({ message: 'Credenciais inválidas' });
+    }
+
+    const passwordMatch = await bcrypt.compare(password, admin.password);
+    if (!passwordMatch) {
+      return res.status(400).json({ message: 'Credenciais inválidas' });
+    }
+  
+    const token = jwt.sign({ adminId: admin._id }, 'seuSegredo');
+
+    res.status(200).json({ token });
+  } catch (error) {
+    console.error('Erro ao fazer login de administrador:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
+
+// ROTAS PARA O LOGIN DO USUÁRIO //
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -58,7 +84,6 @@ router.post('/register', upload.single("file"),  async (req, res) => {
 
     const { nome, email, password } = req.body;
     const Filename  = req.file.filename;
-    console.log(Filename)
 
     const existingUser = await Users.findOne({ email });
     if (existingUser) {

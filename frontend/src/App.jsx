@@ -2,6 +2,42 @@ import { useState } from 'react';
 import './App.css';
 
 function App() {
+
+  const [admin, setAdmin] = useState({
+    email: '',
+    password: ''
+  })
+
+  const handleAdminChange = (e) => {
+    const { name, value } = e.target;
+    setAdmin(prevAdmin => ({
+      ...prevAdmin,
+      [name]: value
+    }));
+  };
+
+  const handleAdmin = async (e) => {
+
+    e.preventDefault()
+
+    try {
+      const fetchData = await fetch('http://localhost:3000/register-admin', {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(admin)
+      });
+
+      const res = await fetchData.json();
+      console.log(res);
+      alert("Admin Registrado com sucesso!!")
+    } catch (error) {
+      console.log(error);
+    }
+
+  }
+
   const [registerData, setRegisterData] = useState({
     nome: '',
     email: '',
@@ -107,6 +143,15 @@ function App() {
 
   return (
     <div className="App">
+       <div>
+        <h1>Registrar Admin</h1>
+        <form onSubmit={handleAdmin}>
+          <input type="email" name="email" value={admin.email} onChange={handleAdminChange} placeholder="E-mail" />
+          <input type="password" name="password" value={admin.password} onChange={handleAdminChange} placeholder="Senha" accept='application/pdf' />
+          <button type='submit'>Cadastrar</button>
+        </form>
+      </div>
+
       <div>
         <h1>Registrar Usuário</h1>
         <form onSubmit={handleRegisterSubmit} encType="multipart/form-data">
