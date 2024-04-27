@@ -64,7 +64,7 @@ router.post('/login-admin', async (req, res) => {
 
 // ROTAS PARA O LOGIN DO USUÁRIO //
 
-onst storage = multer.diskStorage({
+const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, './uploads');
   },
