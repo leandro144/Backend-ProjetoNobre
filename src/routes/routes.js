@@ -174,14 +174,14 @@ router.get('/user-data', async (req, res) => {
       return res.status(404).json({ message: 'Dados do aluno não encontrados' });
     }
 
-    const filePath = path.join(__dirname, 'uploads', userData.filePath);
-
     res.setHeader('Content-Type', 'application/pdf');
-    res.sendFile(filePath);
+
+    res.status(200).json(userData);
   } catch (error) {
     console.error('Erro ao buscar dados do aluno:', error);
     res.status(500).json({ error: 'Erro interno do servidor' });
   }
 });
+
 
 export default router;
