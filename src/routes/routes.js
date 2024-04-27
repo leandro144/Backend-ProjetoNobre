@@ -179,4 +179,23 @@ router.get('/user-data', async (req, res) => {
   }
 });
 
+router.get('/download-arquivo/:userId', async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const userData = await Users.findById(userId);
+
+    if (!userData) {
+      return res.status(404).json({ message: 'Dados do usuário não encontrados' });
+    }
+
+    const filePath = userData.filePath; // Assumindo que o caminho do arquivo está armazenado em userData.filePath
+
+    // Envie o arquivo como resposta para download
+    res.download(filePath);
+  } catch (error) {
+    console.error('Erro ao baixar arquivo do usuário:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
 export default router;
