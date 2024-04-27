@@ -139,6 +139,15 @@ router.get('/usuarios', async (req, res) => {
     }
 })
 
+const decodeAuthToken = (token) => {
+  try {
+    const decoded = jwt.verify(token, 'seuSegredo');
+    return decoded.userId;
+  } catch (error) {
+    throw new Error('Token inválido');
+  }
+};
+
 router.get('/user-data', async (req, res) => {
   try {
     const token = req.headers.authorization;
@@ -169,6 +178,3 @@ router.get('/user-data', async (req, res) => {
     res.status(500).json({ error: 'Erro interno do servidor' });
   }
 });
-
-
-export default router;
