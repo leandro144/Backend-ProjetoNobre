@@ -179,7 +179,7 @@ router.get('/user-data', async (req, res) => {
   }
 });
 
-router.get('/download-arquivo/:userId', async (req, res) => {
+router.get('/usuarios/:userId', async (req, res) => {
   try {
     const userId = req.params.userId;
     const userData = await Users.findById(userId);
