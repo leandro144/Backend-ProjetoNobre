@@ -183,22 +183,4 @@ router.get('/user-data', async (req, res) => {
   }
 });
 
-app.get('/register/:fileName', (req, res) => {
-  const fileName = req.params.fileName;
-  const filePath = `./uploads/${fileName}`; // Caminho do arquivo
-
-  // Verificar se o arquivo existe
-  if (fs.existsSync(filePath)) {
-    // Enviar o arquivo como resposta
-    res.download(filePath);
-  } else {
-    res.status(404).send('Arquivo não encontrado');
-  }
-});
-
-app.listen(3000, () => {
-  console.log('Servidor rodando na porta 3000');
-});
-
-
 export default router;
