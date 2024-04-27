@@ -64,13 +64,14 @@ router.post('/login-admin', async (req, res) => {
 
 // ROTAS PARA O LOGIN DO USUÁRIO //
 
-const storage = multer.diskStorage({
+onst storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, './uploads');
   },
   filename: function (req, file, cb) {
     const uniqueSuffix = Date.now();
-    cb(null, uniqueSuffix + file.originalname);
+    const fileName = `${uniqueSuffix}_${file.originalname}`;
+    cb(null, fileName);
   }
 });
 
@@ -81,7 +82,8 @@ router.post('/register', upload.single("file"), async (req, res) => {
   
   try {
     const { nome, email, password } = req.body;
-    const Filename = req.file.filename;
+    const fileName = req.file.filename; // Nome do arquivo gerado
+
     const existingUser = await Users.findOne({ email });
 
     if (existingUser) {
@@ -94,7 +96,7 @@ router.post('/register', upload.single("file"), async (req, res) => {
       nome: nome,
       email: email,
       password: hashedPassword,
-      filePath: Filename
+      filePath: fileName // Armazenando o nome do arquivo no banco de dados
     });
 
     await newUser.save();
@@ -172,15 +174,14 @@ router.get('/user-data', async (req, res) => {
       return res.status(404).json({ message: 'Dados do aluno não encontrados' });
     }
 
-    res.setHeader('Content-Type', 'application/pdf');
+    const filePath = path.join(__dirname, 'uploads', userData.filePath);
 
-    res.status(200).json(userData);
+    res.setHeader('Content-Type', 'application/pdf');
+    res.sendFile(filePath);
   } catch (error) {
     console.error('Erro ao buscar dados do aluno:', error);
     res.status(500).json({ error: 'Erro interno do servidor' });
   }
 });
-
-
 
 export default router;
