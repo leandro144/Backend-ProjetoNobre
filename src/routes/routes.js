@@ -4,6 +4,13 @@ import Users from '../models/sigup.js'
 import bcrypt from 'bcrypt'
 import jwt from  'jsonwebtoken'
 import multer from 'multer'
+import path from 'path'
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
 
 const router = express.Router();
 
@@ -62,15 +69,14 @@ router.post('/login-admin', async (req, res) => {
 });
 
 
-// ROTAS PARA O LOGIN DO USUÁRIO //
+// ROTAS PARA ADICIONAR LOGIN DO USUÁRIO, UTILIZADO PELO ADM //
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, './uploads');
   },
   filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now();
-    const fileName = `${uniqueSuffix}_${file.originalname}`;
+    const fileName = `${file.originalname}`;
     cb(null, fileName);
   }
 });
@@ -82,7 +88,7 @@ router.post('/register', upload.single("file"), async (req, res) => {
   
   try {
     const { nome, email, password } = req.body;
-    const fileName = req.file.filename; // Nome do arquivo gerado
+    const fileName = req.file.filename;
 
     const existingUser = await Users.findOne({ email });
 
@@ -96,7 +102,7 @@ router.post('/register', upload.single("file"), async (req, res) => {
       nome: nome,
       email: email,
       password: hashedPassword,
-      filePath: fileName // Armazenando o nome do arquivo no banco de dados
+      filePath: fileName
     });
 
     await newUser.save();
@@ -182,5 +188,19 @@ router.get('/user-data', async (req, res) => {
     res.status(500).json({ error: 'Erro interno do servidor' });
   }
 });
+
+router.get('/download-pdf/:fileName', async (req, res) => {
+  try {
+    const fileName = req.params.fileName;
+    const filePath = path.join(__dirname, '../../uploads', fileName); 
+    
+    res.download(filePath, fileName);
+  } catch (error) {
+    console.error('Erro ao buscar arquivo PDF:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
+
 
 export default router;
