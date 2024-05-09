@@ -1,6 +1,7 @@
 import express from 'express'
 import Admin from  '../models/admin.js'
 import Users from '../models/sigup.js'
+import Teacher from '../models/teachers.js'
 import bcrypt from 'bcrypt'
 import jwt from  'jsonwebtoken'
 import multer from 'multer'
@@ -197,6 +198,119 @@ router.get('/download-pdf/:fileName', async (req, res) => {
     res.download(filePath, fileName);
   } catch (error) {
     console.error('Erro ao buscar arquivo PDF:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
+router.post('/register-teacher', async (req, res) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  
+  try {
+    const { name, email, password, matters } = req.body;
+
+    const existingUser = await Teacher.findOne({ email });
+
+    if (existingUser) {
+      return res.status(400).json({ message: 'E-mail já está em uso' });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 12);
+
+    const newUser = new Teacher({
+      nome: name,
+      email: email,
+      password: hashedPassword,
+      matters: matters
+    });
+
+    await newUser.save();
+    res.status(201).json({ message: 'Usuário registrado com sucesso' });
+  } catch (error) {
+    console.error('Erro ao registrar usuário:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+})
+
+router.post('/login-teacher', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    const user = await Teacher.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ message: 'Credenciais inválidas' });
+    }
+
+    const passwordMatch = await bcrypt.compare(password, user.password);
+    if (!passwordMatch) {
+      return res.status(400).json({ message: 'Credenciais inválidas' });
+    }
+  
+    const token = jwt.sign({ userId: user._id }, 'seuSegredo');
+
+    res.status(200).json({ token });
+  } catch (error) {
+    console.error('Erro ao fazer login:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+})
+
+router.post('/add-dayli', async (req, res) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+
+  try {
+    const { student, totalPresences, totalAbsences, activity1, activity2, exam, average, finalResult } = req.body;
+    const user = await Users.findById(student);
+
+    if (!user) {
+      return res.status(404).json({ error: 'Usuário não encontrado' });
+    }
+
+    user.totalAttendance = totalPresences;
+    user.totalFault = totalAbsences;
+    user.Ativ1 = activity1;
+    user.ativ2 = activity2;
+    user.Prova = exam;
+    user.media = average;
+    user.resultFinal = finalResult;
+
+    await user.save();
+    res.status(201).json({ message: 'Dados cadastrados com sucesso' });
+  } catch (error) {
+    console.error('Erro ao registrar notas:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
+
+router.get('/get-teacher-data', async (req, res) => {
+  try {
+    const token = req.headers.authorization;
+
+    if (!token) {
+      return res.status(401).json({ message: 'Token de autenticação não fornecido' });
+    }
+
+    const tokenParts = token.split(' ');
+
+    if (tokenParts.length !== 2 || tokenParts[0] !== 'Bearer') {
+      return res.status(401).json({ message: 'Formato inválido do token de autenticação' });
+    }
+
+    const authToken = tokenParts[1];
+
+    const userId = decodeAuthToken(authToken);
+
+    const userData = await Teacher.findById(userId);
+
+    if (!userData) {
+      return res.status(404).json({ message: 'Dados do aluno não encontrados' });
+    }
+
+    res.setHeader('Content-Type', 'application/pdf');
+
+    res.status(200).json(userData);
+  } catch (error) {
+    console.error('Erro ao buscar dados do aluno:', error);
     res.status(500).json({ error: 'Erro interno do servidor' });
   }
 });
