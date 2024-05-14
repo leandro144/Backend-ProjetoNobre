@@ -148,6 +148,19 @@ router.get('/usuarios', async (req, res) => {
     }
 })
 
+router.delete('/usuarios/:id', async (req, res) => {
+  try {
+    const usuario = await Users.findByIdAndDelete(req.params.id);
+    if (!usuario) {
+      return res.status(404).send({ error: "Usuário não encontrado" });
+    }
+    res.send({ message: "Usuário excluído com sucesso" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ error: "Erro ao excluir usuário" });
+  }
+});
+
 const decodeAuthToken = (token) => {
   try {
     const decoded = jwt.verify(token, 'seuSegredo');
@@ -280,7 +293,6 @@ router.post('/add-dayli', async (req, res) => {
     res.status(500).json({ error: 'Erro interno do servidor' });
   }
 });
-
 
 router.get('/get-teacher-data', async (req, res) => {
   try {
