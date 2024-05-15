@@ -157,7 +157,6 @@ const decodeAuthToken = (token) => {
     throw new Error('Token inválido');
   }
 };
-<<<<<<< HEAD
 
 router.get('/user-data', async (req, res) => {
   try {
@@ -328,8 +327,6 @@ router.delete('/usuarios/:id', async (req, res) => {
     res.status(500).send({ error: "Erro ao excluir aluno" });
   }
 });
-=======
->>>>>>> feeb2d9cab7c73565154900a5e6eb5bcecc0888b
 
 router.get('/user-data', async (req, res) => {
   try {
