@@ -48,7 +48,6 @@ router.post('/register-admin', async (req, res) => {
 })
 
 router.post('/login-admin', async (req, res) => {
-  
   try {
     const { email, password } = req.body;
 
@@ -328,7 +327,5 @@ router.delete('/usuarios/:id', async (req, res) => {
     res.status(500).send({ error: "Erro ao excluir aluno" });
   }
 });
-
-
 
 export default router;

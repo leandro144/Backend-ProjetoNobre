@@ -4,10 +4,11 @@ import './config/database.js';
 import Route from './src/routes/routes.js';
 
 const app = express();
-
 app.use(express.json());
-const port = 3000;
 app.use(cors());
+
+
+const port = 3000;
 
 app.use('/dados', Route);
 app.use(Route);
