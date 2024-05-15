@@ -5,10 +5,9 @@ import Route from './src/routes/routes.js';
 
 const app = express();
 
-app.use(cors());
-
 app.use(express.json());
 const port = 3000;
+app.use(cors());
 
 app.use('/dados', Route);
 app.use(Route);
