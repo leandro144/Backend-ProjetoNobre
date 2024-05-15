@@ -162,7 +162,7 @@ router.get('/user-data', async (req, res) => {
     const token = req.headers.authorization;
 
     if (!token) {
-      return res.status(401).json({ message: 'Token de autenticação não fornecido' });
+      return res.status(401).json({ message: 'Token de autenticação não fornecido!!' });
     }
 
     const tokenParts = token.split(' ');
