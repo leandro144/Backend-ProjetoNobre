@@ -4,7 +4,9 @@ import cors from 'cors'
 import './config/database.js'
 import Route from './src/routes/routes.js'
 
-app.use(cors());
+app.use(cors({
+    origin: 'https://frontend-projeto-nobre.vercel.app/'
+}));
 app.use(express.json());
 const port = 3000
 

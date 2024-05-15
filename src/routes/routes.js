@@ -18,6 +18,7 @@ const router = express.Router();
 
 // LOGIN PARA ADMIN //
 
+
 router.post('/register-admin', async (req, res) => {
   
   try {
@@ -47,6 +48,7 @@ router.post('/register-admin', async (req, res) => {
 })
 
 router.post('/login-admin', async (req, res) => {
+  
   try {
     const { email, password } = req.body;
 
@@ -162,7 +164,7 @@ router.get('/user-data', async (req, res) => {
     const token = req.headers.authorization;
 
     if (!token) {
-      return res.status(401).json({ message: 'Token de autenticação não fornecido!!' });
+      return res.status(401).json({ message: 'Token de autenticação não fornecido!' });
     }
 
     const tokenParts = token.split(' ');
