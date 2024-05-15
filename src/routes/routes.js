@@ -314,18 +314,6 @@ router.get('/get-teacher-data', async (req, res) => {
   }
 });
 
-router.delete('/usuarios/:id', async (req, res) => {
-  try {
-    const usuario = await Users.findByIdAndDelete(req.params.id);
-    if (!usuario) {
-      return res.status(404).send({ error: "Usuário não encontrado" });
-    }
-    res.send({ message: "Usuário excluído com sucesso" });
-  } catch (error) {
-    console.error(error);
-    res.status(500).send({ error: "Erro ao excluir usuário" });
-  }
-});
 
 
 
