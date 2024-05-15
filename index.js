@@ -1,18 +1,18 @@
-import express from 'express'
+import express from 'express';
+import cors from 'cors';
+import './config/database.js';
+import Route from './src/routes/routes.js';
+
 const app = express();
-import cors from 'cors'
-import './config/database.js'
-import Route from './src/routes/routes.js'
 
-app.use(cors({
-    origin: 'https://frontend-projeto-nobre.vercel.app/'
-}));
+app.use(cors());
+
 app.use(express.json());
-const port = 3000
+const port = 3000;
 
-app.use('/dados', Route)
-app.use(Route)
+app.use('/dados', Route);
+app.use(Route);
 
 app.listen(port, () => {
-    console.log(`Servidor rodando na porta ${port}`)
-})
+  console.log(`Servidor rodando na porta ${port}`);
+});
