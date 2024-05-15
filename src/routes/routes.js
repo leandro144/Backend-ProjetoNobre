@@ -395,7 +395,7 @@ router.post('/login-teacher', async (req, res) => {
       return res.status(400).json({ message: 'Credenciais inválidas' });
     }
 
-    const passwordMatch = await bcrypt.compare(password, user.password);
+    const passwordMatch = bcrypt.compare(password, user.password);
     if (!passwordMatch) {
       return res.status(400).json({ message: 'Credenciais inválidas' });
     }
