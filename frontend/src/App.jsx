@@ -3,41 +3,6 @@ import './App.css';
 
 function App() {
 
-  const [admin, setAdmin] = useState({
-    email: '',
-    password: ''
-  })
-
-  const handleAdminChange = (e) => {
-    const { name, value } = e.target;
-    setAdmin(prevAdmin => ({
-      ...prevAdmin,
-      [name]: value
-    }));
-  };
-
-  const handleAdmin = async (e) => {
-
-    e.preventDefault()
-
-    try {
-      const fetchData = await fetch('http://localhost:3000/register-admin', {
-        method: "POST",
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(admin)
-      });
-
-      const res = await fetchData.json();
-      console.log(res);
-      alert("Admin Registrado com sucesso!!")
-    } catch (error) {
-      console.log(error);
-    }
-
-  }
-
   const [registerData, setRegisterData] = useState({
     nome: '',
     email: '',
@@ -45,10 +10,13 @@ function App() {
     file: ""
   });
 
-  const [loginData, setLoginData] = useState({
+  const [registerTeacher, setRegisterTeacher] = useState({
+    name: '',
     email: '',
     password: '',
-  });
+    materia: ''
+  })
+
 
   const formData = new FormData();
   formData.append("file", registerData.file);
@@ -68,15 +36,7 @@ function App() {
       [name]: value
     }));
   }
-
-  const handleLoginChange = (e) => {
-    const { name, value } = e.target;
-    setLoginData(prevData => ({
-      ...prevData,
-      [name]: value
-    }));
-  }
-
+  
   const handleRegisterSubmit = async (e) => {
     e.preventDefault();
   
@@ -111,50 +71,49 @@ function App() {
     }
   }
 
-  const handleLoginSubmit = async (e) => {
-    e.preventDefault();
 
+  const handleTeacherChange = (e) => {
+    const { name, value } = e.target;
+    setRegisterTeacher(prevData => ({
+      ...prevData,
+      [name]: value
+    }));
+  }
+
+  const handleRegisterTeacher = async (e) => {
+    e.preventDefault();
+  
     try {
-      const fetchData = await fetch('http://localhost:3000/login', {
-        method: "POST",
+  
+      const fetchTeacher = await fetch('http://localhost:3000/register-teacher', {
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(loginData)
+        body: JSON.stringify(registerTeacher) 
       });
-
-      const res = await fetchData.json();
+  
+      const res = await fetchTeacher.json();
       console.log(res);
-      if (fetchData.ok) { 
-        alert('Usuário logado com sucesso!');
-        setRegisterData({
-          nome: '',
-          email: '',
-          password: '',
-          file: 'file'
-        });
+  
+      if (!fetchTeacher.ok) {
+        alert('Professor Registrado com sucesso!!');
       } else {
-        alert('Email ou senha incorreto!');
+        alert('Erro ao registrar o professor');
       }
     } catch (error) {
-      console.log(error);
+      console.error('Erro ao registrar o professor:', error);
     }
-  }
+  };
+  
+
 
   return (
     <div className="App">
-       <div>
-        <h1>Registrar Admin</h1>
-        <form onSubmit={handleAdmin}>
-          <input type="email" name="email" value={admin.email} onChange={handleAdminChange} placeholder="E-mail" />
-          <input type="password" name="password" value={admin.password} onChange={handleAdminChange} placeholder="Senha" accept='application/pdf' />
-          <button type='submit'>Cadastrar</button>
-        </form>
-      </div>
 
       <div>
         <h1>Registrar Usuário</h1>
-        <form onSubmit={handleRegisterSubmit} encType="multipart/form-data">
+        <form onSubmit={handleRegisterSubmit}>
           <input type="text" name="nome" value={registerData.nome} onChange={handleRegisterChange} placeholder="Nome" />
           <input type="email" name="email" value={registerData.email} onChange={handleRegisterChange} placeholder="E-mail" />
           <input type="password" name="password" value={registerData.password} onChange={handleRegisterChange} placeholder="Senha" accept='application/pdf' />
@@ -164,13 +123,43 @@ function App() {
       </div>
 
       <div>
-        <h1>Login</h1>
-        <form onSubmit={handleLoginSubmit}>
-          <input type="email" name="email" value={loginData.email} onChange={handleLoginChange} placeholder="E-mail" />
-          <input type="password" name="password" value={loginData.password} onChange={handleLoginChange} placeholder="Senha" />
-          <button type='submit'>Login</button>
+        <form onSubmit={handleRegisterTeacher}>
+            <input 
+            type="text" 
+            name='name' 
+            value={registerTeacher.name} 
+            onChange={handleTeacherChange} 
+            placeholder='NOME'
+            required
+            />
+            <input 
+            type="email" 
+            name='email' 
+            value={registerTeacher.email} 
+            onChange={handleTeacherChange} 
+            placeholder='EMAIL'
+            required
+            />
+            <input 
+            type="password" 
+            name='password' 
+            value={registerTeacher.password} 
+            onChange={handleTeacherChange} 
+            placeholder='SENHA'
+            required
+            />
+            <input 
+            type="text" 
+            name='materia' 
+            value={registerTeacher.materia} 
+            onChange={handleTeacherChange} 
+            placeholder='MATERIA'
+            required
+            />
+            <button type='submit'>CADASTRAR</button>
         </form>
       </div>
+
     </div>
   );
 }
