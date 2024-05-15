@@ -14,8 +14,8 @@ const siginSchema = new Schema({
     Prova: Number,
     media: Number,
     resultFinal: String,
-}, {collection: 'registro'})
+}, {collection: 'registros'})
 
-const Sigin = mongoose.model('Sigin', siginSchema);
+const Users = mongoose.model('Users', siginSchema);
 
-export default Sigin;
+export default Users;
