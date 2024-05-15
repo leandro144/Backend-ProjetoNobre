@@ -323,7 +323,7 @@ router.delete('/usuarios/:id', async (req, res) => {
     res.send({ message: "Usuário excluído com sucesso" });
   } catch (error) {
     console.error(error);
-    res.status(500).send({ error: "Erro ao excluir usuário" });
+    res.status(500).send({ error: "Erro ao excluir aluno" });
   }
 });
 
