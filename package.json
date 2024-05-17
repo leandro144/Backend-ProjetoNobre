@@ -5,7 +5,6 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon index.js",
-    "postinstall": "npm rebuild bcrypt",
     "dev": "nodemon"
   },
   "keywords": [],
