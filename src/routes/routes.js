@@ -116,18 +116,24 @@ router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
 
+    console.log('Email:', email); 
+    console.log('Senha:', password); 
+
     const user = await Users.findOne({ email });
+    console.log('Usuário encontrado:', user);
+
     if (!user) {
       return res.status(400).json({ message: 'Credenciais inválidas' });
     }
 
     const passwordMatch = await bcrypt.compare(password, user.password);
+    console.log('Senha correta:', passwordMatch); 
+
     if (!passwordMatch) {
       return res.status(400).json({ message: 'Credenciais inválidas' });
     }
   
     const token = jwt.sign({ userId: user._id }, 'seuSegredo');
-
 
     res.status(200).json({ token });
   } catch (error) {
@@ -466,6 +472,29 @@ router.get('/get-teacher-data', async (req, res) => {
   } catch (error) {
     console.error('Erro ao buscar dados do aluno:', error);
     res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
+router.get('/getteachers', async (req, res) => {
+  try {
+    const data = await Teacher.find();
+    return res.status(200).json(data);
+  } catch (error) {
+    console.error('Erro ao buscar professores:', error);
+    return res.status(500).json({ error: 'Erro interno do servidor ao buscar professores' });
+  }
+})
+
+router.delete('/getteachers/:id', async (req, res) => {
+  try {
+    const user = await Teacher.findByIdAndDelete(req.params.id);
+    if (!user) {
+      return res.status(404).send({ error: "Professor não encontrado" });
+    }
+    res.send({ message: "Professor excluído com sucesso" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ error: "Erro ao excluir aluno" });
   }
 });
 
